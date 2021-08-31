@@ -1,0 +1,18 @@
+
+1、IO介绍
+	含义：输入（Input）经过算法处理产生输出（Output）
+	
+2、io：最基本的IO接口
+	最重要的两个接口：
+		Reader和Writer接口
+
+	-Reader接口：
+		type Reader interface {
+			Read(p []byte) (n int, err error)
+		}
+
+		方法集：只包含一个Read方法；
+					所有实现了Read()方法的类型都满足io.Reader接口
+						在需要io.Reader的地方，可以传递实现了Read()方法的类型的实例
+
+						
