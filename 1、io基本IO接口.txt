@@ -13,6 +13,53 @@
 
 		方法集：只包含一个Read方法；
 					所有实现了Read()方法的类型都满足io.Reader接口
-						在需要io.Reader的地方，可以传递实现了Read()方法的类型的实例
+						在需要io.Reader的地方，可以传递实现了Read()方法的类型的【实例】
+							示例用法：
 
-						
+								//io.Reader 作为参数
+								//只要来源实现了io.Reader的接口（Read()方法）
+								func ReadFrom(reader io.Reader, num int) ([]byte, error) {
+								    p := make([]byte, num)
+								    n, err := reader.Read(p)
+								    if n > 0 {
+								        return p[:n], nil
+								    }
+								    return p, err
+								}
+
+								//从标准输入
+								data, err = ReadFrom(os.Stdin, 11)//Stdin  = NewFile(uintptr(syscall.Stdin), "/dev/stdin")
+								//从普通文件读取，其中file是os.File的实例
+								data, err = ReadFrom(file, 9)//type File struct {*file // os specific}
+								//从字符串读取
+								data, err = ReadFrom(strings.NewReader("from string"), 12)//func NewReader(s string) *Reader { return &Reader{s, 0, -1} }
+
+	-Writer接口：
+		type Writer interface {
+		    Write(p []byte) (n int, err error)
+		}
+
+		方法集：只包含一个Write方法
+					所有实现了Write方法的类型都实现了io.Writer接口
+							示例用法：
+								fmt包内有一组【函数】：
+									Fprint/Fprintf/Fprintln
+
+									func Fprint(w io.Writer, a ...interface{}) (n int, err error)
+									func Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error)
+									func Fprintln(w io.Writer, a ...interface{}) (n int, err error)
+
+3、如何查看实现了io.Reader接口或io.Writer接口的类型？
+	函数参数是一个接口类型，如何传递参数？
+		标准库有哪些类型实现了io.Reader或io.Writer接口？
+			os.File{} 同时实现了读写两个接口：
+				这三个都是os.File的实例：自然也实现了io.Reader和io.Writer
+					Stdin  = NewFile(uintptr(syscall.Stdin), "/dev/stdin")
+					Stdout = NewFile(uintptr(syscall.Stdout), "/dev/stdout")
+					Stderr = NewFile(uintptr(syscall.Stderr), "/dev/stderr")
+
+
+
+
+
+
