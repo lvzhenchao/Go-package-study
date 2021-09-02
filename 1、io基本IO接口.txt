@@ -53,12 +53,49 @@
 	函数参数是一个接口类型，如何传递参数？
 		标准库有哪些类型实现了io.Reader或io.Writer接口？
 			os.File{} 同时实现了读写两个接口：
-				这三个都是os.File的实例：自然也实现了io.Reader和io.Writer
+				这三个都是【os.File】的实例：自然也实现了io.Reader和io.Writer
 					Stdin  = NewFile(uintptr(syscall.Stdin), "/dev/stdin")
 					Stdout = NewFile(uintptr(syscall.Stdout), "/dev/stdout")
 					Stderr = NewFile(uintptr(syscall.Stderr), "/dev/stderr")
 
+					-os.File 同时实现了 io.Reader 和 io.Writer
+					-strings.Reader 实现了 io.Reader
+					-bufio.Reader/Writer 分别实现了 io.Reader 和 io.Writer
+					-bytes.Buffer 同时实现了 io.Reader 和 io.Writer
+					-bytes.Reader 实现了 io.Reader
+					-compress/gzip.Reader/Writer 分别实现了 io.Reader 和 io.Writer
+					-crypto/cipher.StreamReader/StreamWriter 分别实现了 io.Reader 和 io.Writer
+					-crypto/tls.Conn 同时实现了 io.Reader 和 io.Writer
+					-encoding/csv.Reader/Writer 分别实现了 io.Reader 和 io.Writer
+					-mime/multipart.Part 实现了 io.Reader
+					-net/conn 分别实现了 io.Reader 和 io.Writer(Conn接口定义了Read/Write)
 
+				常用的类型有：os.File、strings.Reader、bufio.Reader/Writer、bytes.Buffer、bytes.Reader
+
+
+4、ReaderAt 和 WriterAt 接口
+	ReaderAt接口：从偏移量处开始读取
+		type ReaderAt interface {
+		    ReadAt(p []byte, off int64) (n int, err error)
+		}
+
+	WriteAt接口：从偏移量处开始写入
+		type WriterAt interface {
+			WriteAt(p []byte, off int64) (n int, err error)
+		}
+		示例：
+			file, err := os.Create("writeAt.txt")
+			if (err != nil) {
+				panic(err)
+			}
+			defer file.Close()
+			file.WriteString("这句话")
+
+			n, err := file.WriteAt([]byte("有句话"), 3)
+			if err != nil {
+				panic(err)
+			}
+			fmt.PrintLn(n)
 
 
 
