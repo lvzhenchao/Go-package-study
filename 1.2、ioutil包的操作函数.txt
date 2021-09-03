@@ -1,0 +1,35 @@
+
+io包下的操作方法较为底层，使用不是很方便
+
+1、ReadAll函数
+	一次读取所有数据
+		func ReadAll(r io.Reader){[]byte, error}
+
+2、ReadDir函数
+	读取目录并返回排好序的文件和子目录
+		func ReadDir(dirname string) ([]fs.FileInfo, error) {}
+
+3、ReadFile和WriteFile函数
+
+	ReadFile: 返回整个文件
+		func ReadFile(filename string) ([]byte, error)
+
+	WriteFile: 将data写入文件，文件不存在则会根据perm权限进行创建，存在时会清空
+		func WriteFile(filename string, data []byte, perm os.FileMode) error
+
+4、TempDir和TempFile函数
+	TempDir：创建一个临时目录
+		func TempDir(dir, pattern string) (name string, err error)
+			示例：
+				b.work, err = ioutil.TempDir("", "go-build")
+					第一个参数为空，表名在系统的默认的临时目录（os.TempDir）中创建临时目录
+					第二个参数是临时目录的路径	
+
+	TempFile：用于创建临时文件
+
+
+	注：需删除掉这些临时
+		defer func() {
+	        f.Close()
+	        os.Remove(f.Name())
+	    }()
