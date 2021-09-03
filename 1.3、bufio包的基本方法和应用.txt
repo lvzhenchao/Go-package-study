@@ -1,0 +1,60 @@
+
+bufio包实现了缓存IO。包装了io.Reader和io.Writer对象，创建了另外的Reader和Writer对象；
+
+type Reader struct {
+    buf          []byte        // 缓存
+    rd           io.Reader    // 底层的io.Reader
+    r, w         int          // buf read and write positions
+    err          error        // 读过程中遇到的错误
+    lastByte     int        // 最后一次读到的字节（ReadByte/UnreadByte)
+    lastRuneSize int        // 最后一次读到的Rune的大小 (ReadRune/UnreadRune)
+}
+
+1.1、实例化bufio.Reader
+
+	func NewReaderSize(rd io.Reader, size int) *Reader {}
+	func NewReader(rd io.Reader) *Reader {}
+
+1.2、ReadSlice、ReadBytes、ReadString 和 ReadLine 方法
+	后三个方法最终都是调用ReadSlice
+
+	示例：
+		reader := bufio.NewReader(strings.NewReader("http://studygolang.com. \nIt is the home of gophers"))
+	    line, _ := reader.ReadSlice('\n')
+	    fmt.Printf("the line:%s\n", line)
+	    // 这里可以换上任意的 bufio 的 Read/Write 操作
+	    n, _ := reader.ReadSlice('\n')
+	    fmt.Printf("the line:%s\n", line)
+	    fmt.Println(string(n))
+
+	    the line:http://studygolang.com. 
+
+	    the line:It is the home of gophers
+	    It is the home of gophers
+
+1.3、Scanner 类型和方法
+
+	以便更容易的处理如按行读取输入序列或空格分隔单词等
+
+	type Scanner struct {
+		r            io.Reader // The reader provided by the client.
+		split        SplitFunc // The function to split the tokens.
+		maxTokenSize int       // Maximum size of a token; modified by tests.
+		token        []byte    // Last token returned by split.
+		buf          []byte    // Buffer used as argument to split.
+		start        int       // First non-processed byte in buf.
+		end          int       // End of data in buf.
+		err          error     // Sticky error.
+		empties      int       // Count of successive empty tokens.
+		scanCalled   bool      // Scan has been called; buffer is in use.
+		done         bool      // Scan has finished.
+	}
+
+	示例：
+		scanner := bufio.NewScanner(os.Stdin)
+	    for scanner.Scan() {
+	        fmt.Println(scanner.Text()) // Println will add back the final '\n'
+	    }
+	    if err := scanner.Err(); err != nil {
+	        fmt.Fprintln(os.Stderr, "reading standard input:", err)
+	    }
