@@ -98,5 +98,56 @@
 			fmt.PrintLn(n)
 
 
+5、ReaderFrom和WriterTo接口【需求：一次性从某个地方读或写到摸个地方去】
+	ReaderFrom：读取数据，直到 EOF 或发生错误
+		type ReaderFrom interface {
+		    ReadFrom(r Reader) (n int64, err error)
+		}
 
+		示例：
+			简单实现将文件中的数据全部读取（显示在标准输出）
+				file, err := os.Open("writeAt.txt")
+				if err != nil {
+					panic(err)
+				}
+				defer file.Close()
+				writer := bufio.NewWriter(os.Stdout)
+				writer.ReadFrom(file)
+				writer.Flush()
+
+		也可以使用ioutil包的ReadFile函数获取文件的全部内容
+
+	WriterTo：写入数据，直到 EOF 或错误发生
+		type WriterTo interface {
+		    WriteTo(w Writer) (n int64, err error)
+		}
+		示例：
+			将一段文本输出到标准输出
+				reader := bytes.NewReader([]byte("一段文本"))
+				reader.WriteTo(os.Stdout)
+
+6、Seeker接口
+	Seek 设置下一次 Read 或 Write 的偏移量为 offset；解释取决于 whence【0：文件起始。1：相对于当前的偏移。2：相对于结尾处】
+		type Seeker interface {
+		    Seek(offset int64, whence int) (ret int64, err error)
+		}
+
+7、Closer接口
+	关闭数据流
+		type Closer interface {
+		    Close() error
+		}
+		实现该接口：
+			-文件（os.file）
+			-归档（压缩包）
+			-数据库连接
+			-Socket
+			...
+
+		file, err := os.Open("studygolang.txt")
+		defer file.Close()                         ===>错误示范：应该将 defer file.Close() 放在错误【检查之后】
+																Close 之前校验错误是个好习惯
+		if err != nil {
+		    ...
+		}
 
