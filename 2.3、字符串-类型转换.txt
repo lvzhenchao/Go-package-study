@@ -1,0 +1,79 @@
+
+字符串和基本数据类型之间转换
+strconv包
+
+1.1、strconv包转换【错误处理】
+	// ErrRange 指示值超出目标类型的范围.
+	var ErrRange = errors.New("value out of range")
+
+	// ErrSyntax 语法错误.
+	var ErrSyntax = errors.New("invalid syntax")
+
+
+	//返回错误的时候，不是直接将上面的变量值返回；而是通过构造一个NumError类型的error对象返回
+	type NumError struct {
+		Func string // the failing function (ParseBool, ParseInt, ParseUint, ParseFloat, ParseComplex)
+		Num  string // the input
+		Err  error  // the reason the conversion failed (e.g. ErrRange, ErrSyntax, etc.)
+	}
+
+	func (e *NumError) Error() string {
+		return "strconv." + e.Func + ": " + "parsing " + Quote(e.Num) + ": " + e.Err.Error()
+	}
+
+	func (e *NumError) Unwrap() error { return e.Err }
+
+	//同理，定义了两个便捷函数，用于构造NumErrot对象
+	func syntaxError(fn, str string) *NumError {
+	    return &NumError{fn, str, ErrSyntax}
+	}
+
+	func rangeError(fn, str string) *NumError {
+	    return &NumError{fn, str, ErrRange}
+	}
+	//在遇到ErrSyntax或ErrRange错误时，通过上面的函数构造NumError对象
+
+1.2、字符串和整型之间的转换
+		int8（-128 -> 127）
+		int16（-32768 -> 32767）
+		int32（-2,147,483,648 -> 2,147,483,647）
+		int64（-9,223,372,036,854,775,808 -> 9,223,372,036,854,775,807）
+
+		//转为有符号整形
+		func ParseInt(s string, base int, bitSize int) (i int64, err error)
+		//转为无符号整形
+		func ParseUint(s string, base int, bitSize int) (n uint64, err error)
+		//是Parselnt的便捷版，内部通过调用ParseInt(s, 10, 0)来实现
+		func Atoi(s string) (i int, err error)
+
+1.3、整形转为字符串
+		func FormatUint(i uint64, base int) string    // 无符号整型转字符串
+		func FormatInt(i int64, base int) string    // 有符号整型转字符串
+		func Itoa(i int) string
+
+1.4、字符串和布尔值之间的转换
+		// 接受 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False 等字符串；
+		// 其他形式的字符串会返回错误
+		func ParseBool(str string) (value bool, err error)
+		// 直接返回 "true" 或 "false"
+		func FormatBool(b bool) string
+		// 将 "true" 或 "false" append 到 dst 中
+		// 这里用了一个 append 函数对于字符串的特殊形式：append(dst, "true"...)
+		func AppendBool(dst []byte, b bool)
+
+1.5、字符串和浮点数之间的转换
+		func ParseFloat(s string, bitSize int) (f float64, err error)
+		func FormatFloat(f float64, fmt byte, prec, bitSize int) string
+		func AppendFloat(dst []byte, f float64, fmt byte, prec int, bitSize int)
+
+1.6、其他函数
+	输出：This is "studygolang.com" website
+
+	//反引号
+	fmt.Println(`This is "studygolang.com" website`)
+	//转义
+    fmt.Println("This is \"studygolang.com\" website")
+    //现成函数
+    //返回的字符串使用 Go 转义序列（\t、\n、\xFF、\u0100）用于
+	由定义的控制字符和不可打印字符
+    fmt.Println("This is", strconv.Quote("studygolang.com"), "website")
