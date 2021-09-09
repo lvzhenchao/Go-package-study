@@ -1,0 +1,73 @@
+
+数据结构是数据组织和存储的逻辑形式，以达到方便访问和修改数据的目的。
+算法是根据实际输入输出的需求设计的一系列计算过程
+
+1、四种基本排序算法
+	插入排序
+	归并排序
+	堆排序
+	快速排序
+
+	type Interface interface {
+		//获取数据集合长度的 Len() 方法
+		Len() int
+
+		//比较两个元素大小的 Less() 方法
+		// 如果 i 索引的数据小于 j 索引的数据，返回 true，且不会调用下面的 Swap()，即数据升序排序
+		Less(i, j int) bool
+
+		//交换两个元素位置的 Swap() 方法
+		Swap(i, j int)
+	}
+
+	数据集合实现了这三个方法后，即可调用该包的Sort()方法进行排序
+		//参数：待排序的数据集合
+		func Sort(data Interface)
+
+	示例：
+		// 学生成绩结构体
+		type StuScore struct {
+		    name  string    // 姓名
+		    score int   // 成绩
+		}
+
+		type StuScores []StuScore
+
+		//Len()
+		func (s StuScores) Len() int {
+		    return len(s)
+		}
+
+		//Less(): 成绩将有低到高排序
+		func (s StuScores) Less(i, j int) bool {
+		    return s[i].score < s[j].score
+		}
+
+		//Swap()
+		func (s StuScores) Swap(i, j int) {
+		    s[i], s[j] = s[j], s[i]
+		}
+
+		func main() {
+		    stus := StuScores{
+		                {"alan", 95},
+		                {"hikerell", 91},
+		                {"acmfly", 96},
+		                {"leao", 90},
+		                }
+
+		    // 打印未排序的 stus 数据
+		    fmt.Println("Default:\n\t",stus)
+		    //StuScores 已经实现了 sort.Interface 接口 , 所以可以调用 Sort 函数进行排序
+		    sort.Sort(stus)
+		    // 判断是否已经排好顺序，将会打印 true
+		    fmt.Println("IS Sorted?\n\t", sort.IsSorted(stus))
+		    // 打印排序后的 stus 数据
+		    fmt.Println("Sorted:\n\t",stus)
+		}
+
+		示例实现的升序排序，如果得到的降序结果需要修改Less()函数
+			//Less(): 成绩降序排序 , 只将小于号修改为大于号
+			func (s StuScores) Less(i, j int) bool {
+			    return s[i].score > s[j].score
+			}
