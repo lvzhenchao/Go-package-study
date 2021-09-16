@@ -1,0 +1,14 @@
+
+时区
+
+使用Location表示相关的地区；
+time包提供了location的两个实例：Local和UTC
+	Local：代表当前系统本地时区
+	UTC：通用协调时间，也就是零时区；也是默认的时区
+
+1.1、获得特定时区的实例
+	func LoadLocation(name string) (*Location, error)
+
+1.2、通常使用
+	time.local即可
+	偶尔使用UTC

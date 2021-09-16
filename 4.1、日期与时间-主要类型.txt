@@ -1,0 +1,13 @@
+
+time包的主要类型
+
+1.1、Location代表一个地区
+
+1.2、Time代表一个纳秒的时间点
+
+1.3、Duration代表两个时间点之间的经过的时间，纳秒为单位，最长290年
+
+1.4、Timer和Ticker定时器相关类型
+
+1.5、Weekday和Month
+
